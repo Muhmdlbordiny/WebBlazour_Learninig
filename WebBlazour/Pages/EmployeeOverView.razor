@@ -1,0 +1,65 @@
+﻿@page "/employeeoverview"
+@using WebBlazour.Service
+<h3>EmployeeOverView</h3>
+@if(Employees !=null){
+	<table class=" table table-dark table-sm table-striped table-hover">
+		<thead>	<tr>
+				<th>Employee Id</th>
+				<th>First Name</th>
+				<th>Last Name</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var employee in Employees)
+			{
+				<tr>
+					<td>@employee.EmployeeId</td>
+					<td>@employee.FirstName</td>
+					<td>@employee.LastName</td>
+					<td> 
+						<a href="@($"employeedetails/{employee.EmployeeId}") " class="btn btn-outline-primary">
+							Details
+						</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else{
+	<p>Loading...</p>
+}
+@code {
+	IEnumerable<Employee> Employees;
+	List<Country> Countries;
+	// [Inject]
+	// public HttpClient HttpClient { get; set; }
+	[Inject]
+	public IEmployeeDataService employeeDataService { get; set; }
+	//protected override async Task OnInitializedAsync()
+	//{
+	// Employees = new List<Employee>
+	// {
+	// 	new Employee { EmployeeId = 1,PhoneNumber="01276738534",ExitDate=null,BirthDate=new DateTime(1999,2,8),JoinedDate=new DateTime(2008,7,13),Gender = Gender.Male,MaritalStatus=MaritalStatus.Single ,Email="mohamed@gmail.com", FirstName = "mohamed ",LastName="ashraf", CountryId = 1 },
+	// 	new Employee { EmployeeId = 2,PhoneNumber="01276738534",ExitDate=null,BirthDate=new DateTime(1993,3,21),JoinedDate=new DateTime(2008,7,10),Gender = Gender.Male,MaritalStatus=MaritalStatus.Married ,Email="ahmed@gmail.com", FirstName = "ahmed ",LastName="ashraf", CountryId = 2 },
+	// 	new Employee { EmployeeId = 3,PhoneNumber="01276738534",ExitDate=null,BirthDate=new DateTime(2001,2,5),JoinedDate=new DateTime(2009,8,15),Gender = Gender.Female,MaritalStatus=MaritalStatus.Single ,Email="aya@gmail.com", FirstName = "aya ",LastName="halim", CountryId = 1 }
+	// };
+	// Countries = new List<Country>
+	// {
+	// 	new Country { CountryId = 1, Name = "Egypt" },
+	// 	new Country { CountryId = 2, Name = "USA" },
+	// 	new Country { CountryId = 3, Name = "UK" }
+	// };
+	//Old 
+	//	Employees = await HttpClient.GetFromJsonAsync<List<Employee>>("https://localhost:44347/api/employee");
+	//return base.OnInitializedAsync();
+
+	//  
+
+	//}
+	protected override async Task OnInitializedAsync()
+	{
+		Employees= await employeeDataService.GetAllEmployees();
+	}
+}

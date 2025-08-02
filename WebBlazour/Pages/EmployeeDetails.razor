@@ -1,0 +1,46 @@
+﻿@page "/employeedetails/{EmployeeId:int}"
+<h3 class="card-title">EmployeeDetails of @CurEmp.FirstName @CurEmp.LastName</h3>
+
+
+<div class="form-group">
+
+	<label class="col-form-label" for="employeeId">Employee Id:</label>
+	<label class="form-control">@CurEmp.EmployeeId</label>
+</div>
+<div class="form-group">
+	<label class="col-form-label" for="firstName">First Name:</label>
+	<label class="form-control">@CurEmp.FirstName</label>
+</div>
+<div class="form-group">
+	<label class="col-form-label" for="lastName">Last Name:</label>
+	<label class="form-control">@CurEmp.LastName</label>
+</div>
+<div class="form-group">
+	<label class="col-form-label" for="email">Email:</label>
+	<label class="form-control">@CurEmp.Email</label>
+</div>
+<div class="form-group">
+	<label class="col-form-label" for="phoneNumber">Phone Number:</label>
+	<label class="form-control">@CurEmp.PhoneNumber</label>
+</div>
+<div class="form-group">
+	<label class="col-form-label" for="birthDate">Birth Date:</label>
+	<label class="form-control">@CurEmp.BirthDate.ToShortDateString()</label>
+</div>
+<div class="form-group">
+	<label class="col-form-label" for="joinedDate">Joined Date:</label>
+	<label class="form-control">@CurEmp.JoinedDate.ToShortDateString()</label>
+
+</div>
+<div class="form-group">
+	<label class="col-form-label" for="exitDate">Exit Date:</label>
+	<label class="form-control">@CurEmp.ExitDate?.ToShortDateString() ?? "N/A"</label>
+</div>
+<div class="form-group">
+	<label class="col-form-lable">Gender</label>
+	<label class="form-control">@CurEmp.Gender</label>
+</div>
+<div class="form-group">
+	<label class="col-form-lable">Marital Status</label>
+	<label class="form-control">@CurEmp.MaritalStatus</label>
+</div>

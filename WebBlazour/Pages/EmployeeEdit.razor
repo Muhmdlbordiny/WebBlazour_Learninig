@@ -1,0 +1,87 @@
+﻿@page "/employeeedit"
+@page "/employeeedit/{EmployeeId:int}"
+@if (!Saved)
+{
+	<h1 class="card-title">EditForm for @CurEmp.FirstName & @CurEmp.LastName</h1>
+	<EditForm Model="@CurEmp" OnValidSubmit="@HandlevaildSubmit" OnInvalidSubmit="HandleInvaildSubmit">
+		<DataAnnotationsValidator />
+		<ValidationSummary></ValidationSummary>
+
+		<div class="form-group row">
+			<label for="firstName" class="col-form-label"> First name :</label>
+			<InputText id="firstName" class="form-control" @bind-Value="@CurEmp.FirstName" />
+			<ValidationMessage For="@(() => CurEmp.FirstName)" />
+		</div>
+		<div class="form-group row">
+			<label for="lastName" class="col-form-label"> Last name :</label>
+			<InputText id="lastName" class="form-control" @bind-Value="@CurEmp.LastName" />
+			<ValidationMessage For="@(() => CurEmp.LastName)" />
+		</div>
+		<div class="form-group row">
+			<label for="email" class="col-form-label"> Email :</label>
+			<InputText id="email" class="form-control" @bind-Value="@CurEmp.Email" />
+			<ValidationMessage For="@(() => CurEmp.Email)" />
+		</div>
+		<div class="form-group row">
+			<label for="phone" class="col-form-label"> Phone Number :</label>
+			<InputText id="phone" class="form-control" @bind-Value="@CurEmp.PhoneNumber" />
+			<ValidationMessage For="@(() => CurEmp.PhoneNumber)" />
+		</div>
+		<div class="form-group row">
+			<label for="birthdate" class="col-form-label"> birthDate  :</label>
+			<InputDate id="birthdate" class="form-control" @bind-Value="@CurEmp.BirthDate" />
+			<ValidationMessage For="@(() => CurEmp.BirthDate)" />
+		</div>
+		<div class="form-group row">
+			<label for="country" class="col-form-label">  country :</label>
+			<InputSelect id="country" class="form-control" @bind-Value="@CurEmp.CountryId">
+				@foreach (var c in Countries)
+				{
+					<option value="@c.CountryId">@c.Name</option>
+				}
+			</InputSelect>
+
+			@* 		<ValidationMessage For="@(() => CurEmp.Country)" />
+ *@	</div>
+		<div class="form-group row">
+			<label for="gender" class="col-form-label">  Gender :</label>
+			<InputSelect id="gender" class="form-control" @bind-Value="@CurEmp.Gender">
+				<option value="@(Gender.Male)"> Male</option>
+				<option value="@(Gender.Female)"> Female</option>
+			</InputSelect>
+
+		</div>
+		<div class="form-group row">
+			<label for="maritalstatus" class="col-form-label">  MaritalStatus :</label>
+			<InputSelect id="maritalstatus" class="form-control" @bind-Value="@CurEmp.MaritalStatus">
+				<option value="@(MaritalStatus.Single)"> Single</option>
+				<option value="@(MaritalStatus.Married)"> Married</option>
+				<option value="@(MaritalStatus.Divorced)"> Divorced</option>
+				<option value="@(MaritalStatus.Widowed)"> Widowed</option>
+				<option value="@(MaritalStatus.other)"> Other</option>
+			</InputSelect>
+
+		</div>
+		<div class="form-group row">
+			<label for="joindate" class="col-form-label"> Joined Date  :</label>
+			<InputDate id="joindate" class="form-control" @bind-Value="@CurEmp.JoinedDate" />
+			<ValidationMessage For="@(() => CurEmp.JoinedDate)" />
+		</div>
+		<div class="form-group row">
+			<label for="exitdate" class="col-form-label"> Exit Date  :</label>
+			<InputDate id="exitdate" class="form-control" @bind-Value="@CurEmp.ExitDate" />
+			<ValidationMessage For="@(() => CurEmp.ExitDate)" />
+		</div>
+		<div class="form-group row">
+			<label for="notes" class="col-form-label"> Comment :</label>
+			<InputTextArea id="notes" class="form-control" @bind-Value="@CurEmp.Comment" />
+			<ValidationMessage For="@(() => CurEmp.Comment)" />
+		</div>
+		<input class="btn btn-outline-info" type="submit" value="Save"/>
+
+	</EditForm>
+}
+else
+{
+	<div class="@Myclass"> Employee Is Updated !</div>
+}
