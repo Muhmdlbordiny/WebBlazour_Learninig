@@ -1,17 +1,32 @@
-﻿using SharedLibrary.Model;
+﻿using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
+using SharedLibrary.Model;
 
 namespace WebBlazour.Service
 {
     public class CountryDataService : ICountryDataService
     {
-        public Task<IEnumerable<Country>> GetAllCountry()
+        private readonly HttpClient _httpClient;
+        public CountryDataService(HttpClient httpClient)
         {
-            throw new NotImplementedException();
+            _httpClient = httpClient;
+        }
+        public async Task<IEnumerable<Country>> GetAllCountry()
+        {
+            return await JsonSerializer.DeserializeAsync<IEnumerable<Country>>
+            (
+                                       await _httpClient.GetStreamAsync("api/country"),
+                                       new JsonSerializerOptions
+                                       {
+                                           PropertyNameCaseInsensitive = true
+                                       }
+                                      );
         }
 
-        public Task<Country> GetCountryById(int countryid)
+        public async Task<Country> GetCountryById(int countryid)
         {
-            throw new NotImplementedException();
+            return await _httpClient.GetFromJsonAsync<Country>($"api/country/{countryid}");
         }
     }
 }

@@ -1,5 +1,8 @@
-﻿using System.Text;
+﻿using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using Microsoft.Extensions.Options;
 using SharedLibrary.Model;
 
 namespace WebBlazour.Service
@@ -13,37 +16,49 @@ namespace WebBlazour.Service
         }
         public async Task<IEnumerable<Employee>> GetAllEmployees()
         {
-            return await JsonSerializer.DeserializeAsync<IEnumerable<Employee>>
-                           (
-                            await _httpClient.GetStreamAsync("api/employee"),
-                            new JsonSerializerOptions
-                            {
-                                PropertyNameCaseInsensitive = true
-                            }
-                           );
+            //return await JsonSerializer.DeserializeAsync<IEnumerable<Employee>>
+            //              (
+            //               await _httpClient.GetStreamAsync("api/employee"),
+            //               new JsonSerializerOptions
+            //               {
+            //                   PropertyNameCaseInsensitive = true
+            //               }
+            //              );
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            options.Converters.Add(new JsonStringEnumConverter());
+
+            return await _httpClient.GetFromJsonAsync<IEnumerable<Employee>>("api/employee", options);
         }
         public async Task<Employee> GetEmployeeById(int employeeid)
         {
+           var  options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            options.Converters.Add(new JsonStringEnumConverter());
+
             return await JsonSerializer.DeserializeAsync<Employee>
                                                   (
                                                    await _httpClient.GetStreamAsync($"api/employee/{employeeid}"),
-                                                   new JsonSerializerOptions
-                                                   {
-                                                       PropertyNameCaseInsensitive = true
-                                                   }
-                                                  );
+                                                  options );
 
         }
 
         public async Task<Employee> GetEmployeeDetails(int employeeid)
         {
+           var  options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            options.Converters.Add(new JsonStringEnumConverter());
+
             return await JsonSerializer.DeserializeAsync<Employee>
                                       (
                                        await _httpClient.GetStreamAsync($"api/employee/{employeeid}"),
-                                       new JsonSerializerOptions
-                                       {
-                                           PropertyNameCaseInsensitive = true
-                                       }
+                                        options
                                       );
         }
         public async Task AddEmployee(Employee employee)
@@ -51,14 +66,16 @@ namespace WebBlazour.Service
             var embSer = new StringContent(JsonSerializer.Serialize(employee)
                         , Encoding.UTF8, "application/json");
 
-            await _httpClient.PostAsync($"api/employee", embSer);
-                                                   
-                                                  
+          var res=  await _httpClient.PostAsync($"api/employee", embSer);
+            res.EnsureSuccessStatusCode();
+
         }
 
-        public Task DeleteEmployee(int employeeid)
+        public async Task DeleteEmployee(int employeeid)
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.DeleteAsync($"api/employee/{employeeid}");
+
+            response.EnsureSuccessStatusCode();
         }
 
        
@@ -67,10 +84,23 @@ namespace WebBlazour.Service
 
         public async Task UpdateEmployee(Employee employee)
         {
-            var embSer = new StringContent(JsonSerializer.Serialize(employee)
+            Console.WriteLine($"Updating employee with ID: {employee.EmployeeId}");
+
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Converters = { new JsonStringEnumConverter() }
+            };
+            var json = JsonSerializer.Serialize(employee, options);
+            Console.WriteLine(json);
+
+            var embSer = new StringContent(json
                                    , Encoding.UTF8, "application/json");
 
-            await _httpClient.PutAsync($"api/employee/{employee.EmployeeId}", embSer);
+          var res =  await _httpClient.PutAsync($"api/employee/{employee.EmployeeId}", embSer);
+            Console.WriteLine($"Response Status Code: {res.StatusCode}");
+
+            res.EnsureSuccessStatusCode();
         }
     }
 }

@@ -1,13 +1,18 @@
 ﻿@page "/employeeoverview"
 @using WebBlazour.Service
+<div>
 <h3>EmployeeOverView</h3>
+	<a href="/employeecreate" class="btn btn-success mb-2">Add New Employee</a>
+
+</div>
 @if(Employees !=null){
 	<table class=" table table-dark table-sm table-striped table-hover">
-		<thead>	<tr>
+		<thead>	
+			<tr>
 				<th>Employee Id</th>
 				<th>First Name</th>
 				<th>Last Name</th>
-				<th>Actions</th>
+				<th colspan="3">Actions</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -17,26 +22,39 @@
 					<td>@employee.EmployeeId</td>
 					<td>@employee.FirstName</td>
 					<td>@employee.LastName</td>
-					<td> 
+					<td>
 						<a href="@($"employeedetails/{employee.EmployeeId}") " class="btn btn-outline-primary">
 							Details
 						</a>
+
+
+						<a href="@($"employeeedit/{employee.EmployeeId}") " class="btn btn-outline-primary">
+							Edit
+						</a>
+						<a href="@($"employeedelete/{employee.EmployeeId}") " class="btn btn-outline-danger">
+							Delete
+						</a>
+
 					</td>
+
 				</tr>
+					
 			}
 		</tbody>
 	</table>
 }
 else{
-	<p>Loading...</p>
-}
+	<Loading />
+    }
 @code {
 	IEnumerable<Employee> Employees;
-	List<Country> Countries;
+	IEnumerable<Country> Countries;
 	// [Inject]
 	// public HttpClient HttpClient { get; set; }
 	[Inject]
 	public IEmployeeDataService employeeDataService { get; set; }
+	[Inject]
+	public ICountryDataService countryDataService { get; set; }
 	//protected override async Task OnInitializedAsync()
 	//{
 	// Employees = new List<Employee>
@@ -61,5 +79,6 @@ else{
 	protected override async Task OnInitializedAsync()
 	{
 		Employees= await employeeDataService.GetAllEmployees();
+		Countries = await countryDataService.GetAllCountry();
 	}
 }

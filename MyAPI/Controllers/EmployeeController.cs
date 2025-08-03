@@ -31,21 +31,44 @@ namespace MyAPI.Controllers
 
         // POST api/<EmployeeController>
         [HttpPost]
-        public void Post([FromBody] Employee emp)
+        public IActionResult Post([FromBody] Employee emp)
         {
-            if (emp != null)
+            
+            try
             {
+                if (emp == null)
+                    return BadRequest("Employee is null");
+               // emp.Country = null;
                 _context.Employees.Add(emp);
                 _context.SaveChanges();
+
+                return CreatedAtAction(nameof(Post), new { id = emp.EmployeeId }, emp);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
 
         // PUT api/<EmployeeController>/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] Employee emp)
         {
             var editEmp = _context.Employees.FirstOrDefault(e=>e.EmployeeId==id);
-            _context.Employees.Update(editEmp);
+           // _context.Employees.Update(editEmp);
+            editEmp.FirstName = emp.FirstName;
+            editEmp.LastName = emp.LastName;
+            editEmp.Email = emp.Email;
+            editEmp.PhoneNumber = emp.PhoneNumber;
+            editEmp.BirthDate = emp.BirthDate;
+            editEmp.JoinedDate = emp.JoinedDate;
+            editEmp.ExitDate = emp.ExitDate;
+            editEmp.Gender = emp.Gender;
+            editEmp.MaritalStatus = emp.MaritalStatus;
+            editEmp.CountryId = emp.CountryId;
+            editEmp.Comment = emp.Comment;
+
             _context.SaveChanges();
             
         }

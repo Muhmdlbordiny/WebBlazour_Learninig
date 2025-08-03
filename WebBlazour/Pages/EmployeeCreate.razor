@@ -1,20 +1,17 @@
-﻿@page "/employeeedit"
-@page "/employeeedit/{EmployeeId:int}"
+﻿@page "/employeecreate"
+@using WebBlazour.Service
+@inject NavigationManager Navigation
+@inject IEmployeeDataService EmployeeDataService
+@inject ICountryDataService CountryDataService
 
-@if (!IsDataLoaded)
-{
-	<p><em>Loading...</em></p>
 
-}
-else{
-@if(CurEmp !=null){
+<h3>Add New Employee</h3>
+
 @if (!Saved)
 {
-	<h1 class="card-title">EditForm for @CurEmp.FirstName & @CurEmp.LastName</h1>
-	<EditForm Model="@CurEmp" OnValidSubmit="@HandlevaildSubmit" OnInvalidSubmit="HandleInvaildSubmit">
+	<EditForm Model="@CurEmp" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
 		<DataAnnotationsValidator />
-		<ValidationSummary></ValidationSummary>
-
+		<ValidationSummary />
 		<div class="form-group row">
 			<label for="firstName" class="col-form-label"> First name :</label>
 			<InputText id="firstName" class="form-control" @bind-Value="@CurEmp.FirstName" />
@@ -40,33 +37,43 @@ else{
 			<InputDate id="birthdate" class="form-control" @bind-Value="@CurEmp.BirthDate" />
 			<ValidationMessage For="@(() => CurEmp.BirthDate)" />
 		</div>
-		<div class="form-group row">
-			<label for="country" class="col-form-label">  country :</label>
-			<InputSelect id="country" class="form-control" @bind-Value="@CurEmp.CountryId">
-				 @foreach (var c in MyCountry)
-				{
-					<option value="@c.CountryId">@c.Name</option>
-				} 
-			</InputSelect>
-
-					<ValidationMessage For="@(() => CurEmp.Country)" />
- 	</div>
+		@if (Countries != null)
+		{
+			<div class="form-group row">
+				<label for="country" class="col-form-label">Country :</label>
+				<InputSelect id="country" class="form-control" @bind-Value="@CurEmp.CountryId">
+					@foreach (var c in Countries)
+					{
+						<option value="@c.CountryId">@c.Name</option>
+					}
+				</InputSelect>
+			</div>
+		}
+		else
+		{
+			<div class="form-group row">
+				<label class="text-warning">Loading countries...</label>
+			</div>
+		}
 		<div class="form-group row">
 			<label for="gender" class="col-form-label">  Gender :</label>
-			<InputSelect id="gender" class="form-control" @bind-Value="@CurEmp.Gender">
-				<option value="@(Gender.Male)"> Male</option>
-				<option value="@(Gender.Female)"> Female</option>
+			<InputSelect id="gender" class="form-control" @bind-Value="@CurEmp.MaritalStatus">
+				@foreach (var status in Enum.GetValues(typeof(MaritalStatus)))
+				{
+					<option value="@(status)">@status</option>
+				}
 			</InputSelect>
+			<ValidationMessage For="@(() => CurEmp.MaritalStatus)" />
 
 		</div>
 		<div class="form-group row">
 			<label for="maritalstatus" class="col-form-label">  MaritalStatus :</label>
-			<InputSelect id="maritalstatus" class="form-control" @bind-Value="@CurEmp.MaritalStatus">
-				<option value="@(MaritalStatus.Single)"> Single</option>
-				<option value="@(MaritalStatus.Married)"> Married</option>
-				<option value="@(MaritalStatus.Divorced)"> Divorced</option>
-				<option value="@(MaritalStatus.Widowed)"> Widowed</option>
-				<option value="@(MaritalStatus.other)"> Other</option>
+			<InputSelect id="maritalstatus" class="form-control" @bind-Value="@CurEmp.Gender">
+				@foreach (var status in Enum.GetValues(typeof(Gender)))
+				{
+					<option value="@(status)">@status</option>
+				}
+				<ValidationMessage For="@(() => CurEmp.Gender)" />
 			</InputSelect>
 
 		</div>
@@ -85,13 +92,46 @@ else{
 			<InputTextArea id="notes" class="form-control" @bind-Value="@CurEmp.Comment" />
 			<ValidationMessage For="@(() => CurEmp.Comment)" />
 		</div>
-		<input class="btn btn-outline-info" type="submit" value="Save"/>
+		<input class="btn btn-outline-info" type="submit" value="Save" />
 
 	</EditForm>
 }
 else
 {
-	<div class="@Myclass"> Employee Is Updated !</div>
+	<div class="alert alert-success">Employee added successfully! Redirecting...</div>
 }
-}
+
+@code {
+	public IEnumerable<Country> Countries;
+	protected  override async Task OnInitializedAsync()
+	{
+		Countries = await CountryDataService.GetAllCountry();
+
+		if (Countries != null && Countries.Any())
+		{
+			CurEmp.CountryId = Countries.First().CountryId;
+		}
+	}
+
+	public Employee CurEmp = new Employee();
+
+    protected bool Saved = false;
+
+    private async Task HandleValidSubmit()
+    {
+		CurEmp.Email ??= "";
+		CurEmp.PhoneNumber ??= "";
+		CurEmp.Comment ??= "";
+		// CurEmp.Country = null;
+
+        await EmployeeDataService.AddEmployee(CurEmp);
+        Saved = true;
+        //await Task.Delay(1000);
+        Navigation.NavigateTo("/employeeoverview");
+    }
+
+    private void HandleInvalidSubmit()
+    {
+        // Show message if needed
+    }
 }

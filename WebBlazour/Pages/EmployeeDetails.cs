@@ -12,7 +12,13 @@ namespace WebBlazour.Pages
         //List<Employee> Employees;
         //List<Country> Countries;
         [Inject]
+        public NavigationManager NavigationManager { get; set; }
+        [Inject]
         public IEmployeeDataService EmployeeDataService { get; set; }
+        [Inject]
+        public ICountryDataService countryDataService { get; set; }
+        public Country MyCountry { get; set; }
+        protected bool IsDataLoaded = false;
         protected override async Task OnInitializedAsync()
         {
             //    Employees = new List<Employee>
@@ -30,6 +36,11 @@ namespace WebBlazour.Pages
             //    CurEmp = Employees.FirstOrDefault(e => e.EmployeeId == EmployeeId);
             //    return base.OnInitializedAsync();
             CurEmp = await EmployeeDataService.GetEmployeeDetails(EmployeeId);
+            if (CurEmp != null)
+            {
+                MyCountry = await countryDataService.GetCountryById(CurEmp.CountryId);
+            }
+            IsDataLoaded = true;
         }
     }
 }

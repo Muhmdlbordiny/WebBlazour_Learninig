@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Components;
 using SharedLibrary.Model;
+using WebBlazour.Service;
 
 namespace WebBlazour.Pages
 {
@@ -11,44 +13,51 @@ namespace WebBlazour.Pages
         protected bool Saved;
         public string Myclass { get; set; }
         protected string Message = string.Empty;
-        List<Employee> Employees;
-        List<Country> Countries;
-        protected override Task OnInitializedAsync()
+        [Inject]
+        public IEmployeeDataService EmployeeDataService { get; set; }
+        [Inject]
+        public NavigationManager NavigationManager { get; set; }
+        [Inject]
+        public ICountryDataService CountryDataService { get; set; }
+        public IEnumerable <Country> MyCountry { get; set; }
+        private bool IsDataLoaded = false;
+
+        //ist<Employee> Employees;
+        //ist<Country> Countries;
+        protected async override Task OnInitializedAsync()
         {
-            Employees = new List<Employee>
-        {
-            new Employee { EmployeeId = 1,PhoneNumber="01276738534",ExitDate=null,BirthDate=new DateTime(1999,2,8),JoinedDate=new DateTime(2008,7,13),Gender = Gender.Male,MaritalStatus=MaritalStatus.Single ,Email="mohamed@gmail.com", FirstName = "mohamed ",LastName="ashraf", CountryId = 1 },
-            new Employee { EmployeeId = 2,PhoneNumber="01276738534",ExitDate=null,BirthDate=new DateTime(1993,3,21),JoinedDate=new DateTime(2008,7,10),Gender = Gender.Male,MaritalStatus=MaritalStatus.Married ,Email="ahmed@gmail.com", FirstName = "ahmed ",LastName="ashraf", CountryId = 2 },
-            new Employee { EmployeeId = 3,PhoneNumber="01276738534",ExitDate=null,BirthDate=new DateTime(2001,2,5),JoinedDate=new DateTime(2009,8,15),Gender = Gender.Female,MaritalStatus=MaritalStatus.Single ,Email="aya@gmail.com", FirstName = "aya ",LastName="halim", CountryId = 1 }
-        };
-            Countries = new List<Country>
-        {
-            new Country { CountryId = 1, Name = "Egypt" },
-            new Country { CountryId = 2, Name = "USA" },
-            new Country { CountryId = 3, Name = "UK" }
-        };
-            CurEmp = Employees.FirstOrDefault(e => e.EmployeeId == EmployeeId);
-            return base.OnInitializedAsync();
+            CurEmp = await EmployeeDataService.GetEmployeeById(EmployeeId);
+            MyCountry = await CountryDataService.GetAllCountry();
+            if (CurEmp == null)
+            {
+                CurEmp = new Employee { CountryId=1 , BirthDate = DateTime.Now,JoinedDate = DateTime.Now};
+            }
+            IsDataLoaded = true;
         }
-        protected void HandlevaildSubmit()
+        protected async void HandlevaildSubmit()
         {
             Saved = false;
             if (CurEmp.EmployeeId == 0)
             {
-                Employees.Add(CurEmp);
+                await EmployeeDataService.AddEmployee(CurEmp);    
             }
             else
             {
-                var editEmp = Employees.FirstOrDefault(e => e.EmployeeId == EmployeeId);
-                if (editEmp != null)
-                {
-                    editEmp.FirstName = CurEmp.FirstName;
-                    editEmp.LastName = CurEmp.LastName;
-                    editEmp.MaritalStatus = CurEmp.MaritalStatus;
-                }
+                //var editEmp = Employees.FirstOrDefault(e => e.EmployeeId == EmployeeId);
+                //if (editEmp != null)
+                //{
+                //    editEmp.FirstName = CurEmp.FirstName;
+                //    editEmp.LastName = CurEmp.LastName;
+                //    editEmp.MaritalStatus = CurEmp.MaritalStatus;
+                //}
+               await EmployeeDataService.UpdateEmployee(CurEmp);
                 Myclass = "alert alert-success";
                 Message = "Employee Updated Successfully";
                 Saved = true;
+                Console.WriteLine(JsonSerializer.Serialize(CurEmp));
+                NavigationManager.NavigateTo("/employeeoverview");
+
+
             }
         }
         protected void HandleInvaildSubmit()

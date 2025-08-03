@@ -25,8 +25,10 @@ namespace SharedLibrary.Model
         public string Comment { get; set; }
         public int CountryId { get; set; }
         public Country? Country { get; set; }
-        public Gender? Gender { get; set; }
-        public MaritalStatus? MaritalStatus { get; set; }
+        [Required]
+        public Gender Gender { get; set; }
+        [Required]
+        public MaritalStatus MaritalStatus { get; set; }
         
         // Navigation properties
     }
