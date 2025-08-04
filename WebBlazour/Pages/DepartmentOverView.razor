@@ -1,0 +1,57 @@
+﻿@page "/departmentoverview"
+@using WebBlazour.Service
+<h3>DepartmentOverView</h3>
+<a href="/departmentcreate" class="btn btn-success mb-2"> Create New  Department</a>
+
+@if (Departments != null)
+{
+	<table class=" table table-dark table-sm table-striped table-hover">
+		<thead>
+			<tr>
+				<th>Department Id</th>
+				<th>Department Name</th>
+				<th colspan="3">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var employee in Departments)
+			{
+				<tr>
+					<td>@employee.Id</td>
+					<td>@employee.Name</td>
+					<td>
+						 <a href="@($"departmentdetails/{employee.Id}") " class="btn btn-outline-primary">
+							Details
+						</a>
+
+						
+						<a href="@($"departmentedit/{employee.Id}") " class="btn btn-outline-primary">
+							Edit
+						</a>
+						
+						<a href="@($"departmentdelete/{employee.Id}") " class="btn btn-outline-danger">
+							Delete
+						</a> 
+
+					</td>
+
+				</tr>
+
+			}
+		</tbody>
+	</table>
+}
+else
+{
+	<Loading/>
+}
+@code {
+	IEnumerable<Department> Departments;
+	[Inject]
+	public IDepartmentDataService DepartmentDataService { get; set; }
+	protected override async Task OnInitializedAsync()
+	{
+		Departments = await DepartmentDataService.GetAllDepartment();
+	}
+}
+

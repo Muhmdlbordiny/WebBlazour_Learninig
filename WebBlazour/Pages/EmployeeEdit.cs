@@ -19,7 +19,10 @@ namespace WebBlazour.Pages
         public NavigationManager NavigationManager { get; set; }
         [Inject]
         public ICountryDataService CountryDataService { get; set; }
+        [Inject]
+        public IDepartmentDataService DepartmentDataService { get; set; }
         public IEnumerable <Country> MyCountry { get; set; }
+        public IEnumerable<Department> MyDepartment { get; set; }
         private bool IsDataLoaded = false;
 
         //ist<Employee> Employees;
@@ -28,6 +31,7 @@ namespace WebBlazour.Pages
         {
             CurEmp = await EmployeeDataService.GetEmployeeById(EmployeeId);
             MyCountry = await CountryDataService.GetAllCountry();
+            MyDepartment = await DepartmentDataService.GetAllDepartment();
             if (CurEmp == null)
             {
                 CurEmp = new Employee { CountryId=1 , BirthDate = DateTime.Now,JoinedDate = DateTime.Now};

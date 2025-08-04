@@ -17,6 +17,10 @@ namespace WebBlazour
             builder.Services.AddHttpClient<ICountryDataService, CountryDataService>(
                client => client.BaseAddress = new Uri("https://localhost:44347/")
                );
+            builder.Services.AddHttpClient<IDepartmentDataService, DepartmentDataService>(
+                               client => client.BaseAddress = new Uri("https://localhost:44347/")
+
+                );
 
             //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:44347/api/employee") });
 

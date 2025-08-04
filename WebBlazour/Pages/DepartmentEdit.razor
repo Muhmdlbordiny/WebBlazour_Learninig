@@ -1,0 +1,59 @@
+﻿@page "/departmentedit/{Id:int}"
+@using WebBlazour.Service
+<h3>DepartmentEdit</h3>
+@if (!IsDataLoaded)
+{
+   <Loading/>
+
+}
+else
+{
+    @if (!Saved)
+    {
+        <EditForm Model="@CurDep" OnValidSubmit="@HandlevaildSubmit" OnInvalidSubmit="HandleInvaildSubmit">
+            <DataAnnotationsValidator />
+        <ValidationSummary></ValidationSummary>
+
+        <div class="form-group row">
+            <label for="lastName" class="col-form-label"> Last name :</label>
+            <InputText id="lastName" class="form-control" @bind-Value="@CurDep.Name" />
+            <ValidationMessage For="@(() => CurDep.Name)" />
+        </div>
+        <div class="text-end">
+            <button type="submit" class="btn btn-success mt-2">Save</button>
+            <button type="button" class="btn btn-secondary" @onclick='() => NavigationManager.NavigateTo("/departmentoverview")'>Back</button>
+        </div>
+    </EditForm>
+    }
+}
+@code {
+    @code {
+        [Inject]
+        public NavigationManager NavigationManager { get; set; }
+        [Parameter]
+        public int Id { get; set; }
+        [Inject]
+        public IDepartmentDataService DepartmentDataService { get; set; }
+        public Department CurDep = new Department();
+        protected bool IsDataLoaded = false;
+        protected bool Saved;
+        protected override async Task OnInitializedAsync()
+        {
+            CurDep = await DepartmentDataService.GetDepartmentById(Id);
+            IsDataLoaded = true;
+
+        }
+        protected async Task HandlevaildSubmit()
+        {
+            Saved = false;
+            await DepartmentDataService.UpdateDepartment(CurDep);
+			Saved = true;
+            NavigationManager.NavigateTo("/departmentoverview");
+        }
+		protected void HandleInvaildSubmit()
+		{
+			//Saved = false;
+			//Console.WriteLine("Invalid Submit");
+		}
+    }
+}

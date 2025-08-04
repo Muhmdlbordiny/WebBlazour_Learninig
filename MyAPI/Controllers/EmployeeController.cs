@@ -68,6 +68,7 @@ namespace MyAPI.Controllers
             editEmp.MaritalStatus = emp.MaritalStatus;
             editEmp.CountryId = emp.CountryId;
             editEmp.Comment = emp.Comment;
+            editEmp.DepartmentId = emp.DepartmentId;
 
             _context.SaveChanges();
             

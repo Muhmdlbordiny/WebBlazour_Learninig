@@ -1,0 +1,47 @@
+﻿@page "/departmentdelete/{DepartmentId:int}"
+@using WebBlazour.Service
+@using SharedLibrary.Model
+@inject NavigationManager Navigation
+@inject IDepartmentDataService DepartmentDataService
+
+<h3>Are you sure you want to delete this Department?</h3>
+
+@if (Dep == null)
+{
+    <Loading />
+}
+else
+{
+    <div class="card p-3">
+        <p><strong>Department Name:</strong> @Dep.Name</p>
+   
+        <button class="btn btn-danger " @onclick="DeleteDepartment">Yes, Delete</button>
+        <button class="btn btn-secondary mt-2" @onclick="Cancel">Cancel</button>
+    </div>
+}
+@code{
+    [Parameter]
+    public int DepartmentId { get; set; }
+
+    private Department Dep;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Dep = await DepartmentDataService.GetDepartmentById(DepartmentId);
+        if (Dep == null)
+        {
+            Navigation.NavigateTo("/departmentoverview");
+        }
+    }
+
+    private async Task DeleteDepartment()
+    {
+        await DepartmentDataService.DeleteDepartment(DepartmentId);
+        Navigation.NavigateTo("/departmentoverview");
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/departmentoverview");
+    }
+}

@@ -17,6 +17,9 @@ namespace WebBlazour.Pages
         public IEmployeeDataService EmployeeDataService { get; set; }
         [Inject]
         public ICountryDataService countryDataService { get; set; }
+        [Inject]
+        public IDepartmentDataService DepartmentDataService { get; set; }
+        public Department MyDepartment { get; set; }
         public Country MyCountry { get; set; }
         protected bool IsDataLoaded = false;
         protected override async Task OnInitializedAsync()
@@ -39,6 +42,9 @@ namespace WebBlazour.Pages
             if (CurEmp != null)
             {
                 MyCountry = await countryDataService.GetCountryById(CurEmp.CountryId);
+                MyDepartment = CurEmp?.DepartmentId is int id
+                    ? await DepartmentDataService.GetDepartmentById(id)
+                    : null;
             }
             IsDataLoaded = true;
         }

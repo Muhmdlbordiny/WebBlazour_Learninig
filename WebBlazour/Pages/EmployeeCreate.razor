@@ -3,7 +3,7 @@
 @inject NavigationManager Navigation
 @inject IEmployeeDataService EmployeeDataService
 @inject ICountryDataService CountryDataService
-
+@inject IDepartmentDataService DepartmentDataService
 
 <h3>Add New Employee</h3>
 
@@ -45,6 +45,24 @@
 					@foreach (var c in Countries)
 					{
 						<option value="@c.CountryId">@c.Name</option>
+					}
+				</InputSelect>
+			</div>
+		}
+		else
+		{
+			<div class="form-group row">
+				<label class="text-warning">Loading countries...</label>
+			</div>
+		}
+		@if (Departments != null)
+		{
+			<div class="form-group row">
+				<label for="dept" class="col-form-label">Department :</label>
+				<InputSelect id="dept" class="form-control" @bind-Value="@CurEmp.DepartmentId">
+					@foreach (var c in Departments)
+					{
+						<option value="@c.Id">@c.Name</option>
 					}
 				</InputSelect>
 			</div>
@@ -103,13 +121,15 @@ else
 
 @code {
 	public IEnumerable<Country> Countries;
+	public IEnumerable<Department> Departments;
 	protected  override async Task OnInitializedAsync()
 	{
 		Countries = await CountryDataService.GetAllCountry();
-
-		if (Countries != null && Countries.Any())
+		Departments = await DepartmentDataService.GetAllDepartment();
+		if (Countries != null && Countries.Any() && Departments !=null)
 		{
 			CurEmp.CountryId = Countries.First().CountryId;
+			CurEmp.DepartmentId = Departments.First().Id;
 		}
 	}
 

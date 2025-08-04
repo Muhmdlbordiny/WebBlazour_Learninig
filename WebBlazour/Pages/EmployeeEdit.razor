@@ -49,9 +49,23 @@ else{
 				} 
 			</InputSelect>
 
-					<ValidationMessage For="@(() => CurEmp.Country)" />
- 	</div>
-		<div class="form-group row">
+			<ValidationMessage For="@(() => CurEmp.Country)" />
+    	</div>
+				<div class="form-group row">
+					<label for="country" class="col-form-label">  Department :</label>
+					<InputSelect id="department" class="form-control" @bind-Value="@CurEmp.DepartmentId">
+						<option value="">-- Select Department --</option>
+
+						@foreach (var c in MyDepartment)
+						{
+							<option value="@c.Id">@c.Name</option>
+						}
+					</InputSelect>
+
+					<ValidationMessage For="@(() => CurEmp.DepartmentId)" />
+				</div>
+
+				<div class="form-group row">
 			<label for="gender" class="col-form-label">  Gender :</label>
 			<InputSelect id="gender" class="form-control" @bind-Value="@CurEmp.Gender">
 				<option value="@(Gender.Male)"> Male</option>

@@ -1,0 +1,45 @@
+﻿@page "/departmentcreate"
+@using WebBlazour.Service
+@inject NavigationManager Navigation;
+@inject IDepartmentDataService DepartmentDataservice;
+
+<h3>DepartmentCreate</h3>
+@if(!Saved)
+{
+
+	<EditForm Model="@CurDep" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+		<div class="form-group row">
+			<label for="DepName" class="col-form-label"> Department name :</label>
+			<InputText id="DepName" class="form-control" @bind-Value="@CurDep.Name" />
+			<ValidationMessage For="@(() => CurDep.Name)" />
+		</div>
+		<input class="btn btn-outline-info mt-2" type="submit" value="Save" />
+		<a href="/departmentoverview" class="btn btn-secondary mt-2 ml-2">Cancel</a>
+
+
+	</EditForm>
+}
+else
+{
+	<div class="alert alert-success">Employee added successfully! Redirecting...</div>
+}
+
+@code {
+	public Department CurDep = new Department();
+
+	protected bool Saved = false;
+	private async Task HandleValidSubmit()
+	{
+		await DepartmentDataservice.AddDepartment(CurDep);
+		Saved = true;
+		Navigation.NavigateTo("/departmentoverview");
+
+	}
+	private void HandleInvalidSubmit()
+	{
+		
+	}
+
+}

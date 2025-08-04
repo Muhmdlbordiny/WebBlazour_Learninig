@@ -29,7 +29,9 @@ namespace SharedLibrary.Model
         public Gender Gender { get; set; }
         [Required]
         public MaritalStatus MaritalStatus { get; set; }
-        
+        public Department? Department { get; set; }
+        public int? DepartmentId { get; set; }
+
         // Navigation properties
     }
 }
